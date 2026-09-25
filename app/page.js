@@ -178,6 +178,54 @@ function InboxIcon() {
   );
 }
 
+function SunIcon({ size = 17 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.42 1.42" />
+      <path d="m17.65 17.65 1.42 1.42" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.35 17.65-1.42 1.42" />
+      <path d="m19.07 4.93-1.42 1.42" />
+    </svg>
+  );
+}
+
+function MoonIcon({ size = 17 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.8 15.4A8.5 8.5 0 0 1 8.6 3.2 8.5 8.5 0 1 0 20.8 15.4Z" />
+    </svg>
+  );
+}
+
+function ThemeIcon({ theme }) {
+  return theme === "dark" ? <MoonIcon /> : <SunIcon />;
+}
+
 /* =========================
    REVEAL
    ========================= */
@@ -523,6 +571,45 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [theme, setTheme] = useState("dark");
+
+  /* =========================
+     THEME
+     ========================= */
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("fades-mail-theme");
+
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme);
+      document.documentElement.dataset.theme = savedTheme;
+      return;
+    }
+
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    const initialTheme = prefersDark ? "dark" : "light";
+
+    setTheme(initialTheme);
+    document.documentElement.dataset.theme = initialTheme;
+  }, []);
+
+  useEffect(() => {
+    if (!theme) return;
+
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("fades-mail-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  };
+
+  /* =========================
+     SCROLL
+     ========================= */
 
   useEffect(() => {
     const handleScroll = () => {
@@ -637,6 +724,26 @@ export default function Home() {
           </nav>
 
           <div className="navbar-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${
+                theme === "dark" ? "light" : "dark"
+              } mode`}
+              title={`Switch to ${
+                theme === "dark" ? "light" : "dark"
+              } mode`}
+            >
+              <span className="theme-toggle-icon">
+                <ThemeIcon theme={theme} />
+              </span>
+
+              <span className="theme-toggle-label">
+                {theme === "dark" ? "Dark" : "Light"}
+              </span>
+            </button>
+
             <span className="nav-status">
               <span className="online-dot" />
               Available now
@@ -673,6 +780,19 @@ export default function Home() {
             <a href="#experience" onClick={closeMenu}>
               Experience
             </a>
+
+            <button
+              type="button"
+              className="mobile-theme-button"
+              onClick={toggleTheme}
+            >
+              <ThemeIcon theme={theme} />
+              <span>
+                {theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"}
+              </span>
+            </button>
 
             <a href={MAIL_URL} onClick={closeMenu}>
               Open Fades Mail <Arrow size={15} />
