@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 
 const MAIL_URL = "https://mail.fades.lol";
 
-/* =========================================================
+/* =========================
    ICONS
-   ========================================================= */
+   ========================= */
 
 function Logo({ size = 34 }) {
   return (
@@ -114,6 +114,7 @@ function SearchIcon() {
       stroke="currentColor"
       strokeWidth="1.8"
       strokeLinecap="round"
+      aria-hidden="true"
     >
       <circle cx="11" cy="11" r="6.5" />
       <path d="m16 16 4.5 4.5" />
@@ -132,6 +133,7 @@ function ShieldIcon() {
       strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <path d="M12 3 20 6v5c0 5.2-3.4 8.4-8 10-4.6-1.6-8-4.8-8-10V6l8-3Z" />
       <path d="m8.7 12 2.1 2.1 4.6-4.7" />
@@ -150,6 +152,7 @@ function BoltIcon() {
       strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <path d="M13 2 4.5 13h6L11 22l8.5-11h-6L13 2Z" />
     </svg>
@@ -167,6 +170,7 @@ function InboxIcon() {
       strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <path d="M4 5.5h16v13H4z" />
       <path d="M4 14h4l1.5 2h5L16 14h4" />
@@ -174,9 +178,9 @@ function InboxIcon() {
   );
 }
 
-/* =========================================================
+/* =========================
    REVEAL
-   ========================================================= */
+   ========================= */
 
 function useReveal(threshold = 0.12) {
   const ref = useRef(null);
@@ -186,6 +190,14 @@ function useReveal(threshold = 0.12) {
     const element = ref.current;
 
     if (!element) return;
+
+    if (
+      typeof window === "undefined" ||
+      typeof IntersectionObserver === "undefined"
+    ) {
+      setVisible(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -221,9 +233,9 @@ function Reveal({ children, className = "", delay = "" }) {
   );
 }
 
-/* =========================================================
-   PRODUCT PREVIEWS
-   ========================================================= */
+/* =========================
+   EMAIL PREVIEW
+   ========================= */
 
 const messages = [
   {
@@ -281,15 +293,15 @@ function InboxPreview({ compact = false }) {
 
   return (
     <div
-      className={`mail-preview presentation-preview ${
-        compact ? "presentation-preview-compact" : ""
+      className={`mail-preview ${
+        compact ? "mail-preview-compact" : ""
       }`}
     >
       <div className="mail-preview-header">
         <div className="mail-preview-dots">
-          <span />
-          <span />
-          <span />
+          <span className="mail-preview-dot" />
+          <span className="mail-preview-dot" />
+          <span className="mail-preview-dot" />
         </div>
 
         <span className="preview-window-title">Fades Mail</span>
@@ -362,7 +374,7 @@ function InboxPreview({ compact = false }) {
           <div className="mail-preview-messages">
             {visibleMessages.map((message, index) => (
               <button
-                key={message.sender}
+                key={`${message.sender}-${message.subject}`}
                 type="button"
                 className={`mail-preview-message ${
                   selected === index ? "selected" : ""
@@ -381,7 +393,6 @@ function InboxPreview({ compact = false }) {
 
                   <div className="mail-preview-subject">
                     {message.subject}
-
                     {message.unread && <i />}
                   </div>
 
@@ -396,9 +407,13 @@ function InboxPreview({ compact = false }) {
   );
 }
 
+/* =========================
+   COMPOSE PREVIEW
+   ========================= */
+
 function ComposePreview() {
   return (
-    <div className="compose-window enhanced-compose">
+    <div className="compose-window">
       <div className="compose-header">
         <div>
           <span className="compose-kicker">NEW MESSAGE</span>
@@ -460,6 +475,10 @@ function ComposePreview() {
   );
 }
 
+/* =========================
+   STORY PREVIEW
+   ========================= */
+
 function StoryMailWindow() {
   return (
     <div className="story-window story-window-front">
@@ -496,9 +515,9 @@ function StoryMailWindow() {
   );
 }
 
-/* =========================================================
+/* =========================
    HOME
-   ========================================================= */
+   ========================= */
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -522,12 +541,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const original = document.documentElement.style.scrollBehavior;
+    const html = document.documentElement;
+    const original = html.style.scrollBehavior;
 
-    document.documentElement.style.scrollBehavior = "smooth";
+    html.style.scrollBehavior = "smooth";
 
     return () => {
-      document.documentElement.style.scrollBehavior = original;
+      html.style.scrollBehavior = original;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -575,7 +609,7 @@ export default function Home() {
   return (
     <div className="presentation-page">
       <header
-        className={`navbar presentation-navbar ${
+        className={`navbar ${
           scrolled ? "navbar-scrolled" : ""
         }`}
       >
@@ -588,7 +622,7 @@ export default function Home() {
             </span>
           </a>
 
-          <nav className="navbar-links">
+          <nav className="navbar-links" aria-label="Main navigation">
             <a href="#about" className="navbar-link">
               About
             </a>
@@ -648,8 +682,6 @@ export default function Home() {
       </header>
 
       <main>
-        {/* HERO */}
-
         <section className="presentation-hero">
           <div className="hero-grid" />
           <div className="presentation-hero-background" />
@@ -745,13 +777,12 @@ export default function Home() {
           <a
             href="#about"
             className="presentation-scroll-hint"
+            aria-label="Scroll to explore"
           >
             <span>SCROLL TO EXPLORE</span>
             <span className="presentation-scroll-arrow">↓</span>
           </a>
         </section>
-
-        {/* QUICK VALUE STRIP */}
 
         <section className="value-strip">
           <div className="value-strip-inner">
@@ -789,8 +820,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* STORY */}
 
         <section className="presentation-story" id="about">
           <div className="presentation-sticky">
@@ -872,8 +901,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* STATEMENT */}
-
         <section className="presentation-statement">
           <Reveal>
             <span className="section-eyebrow">
@@ -887,8 +914,6 @@ export default function Home() {
             </h2>
           </Reveal>
         </section>
-
-        {/* FEATURES */}
 
         <section className="presentation-features" id="features">
           <Reveal className="presentation-section-heading">
@@ -913,13 +938,10 @@ export default function Home() {
               <button
                 key={feature.eyebrow}
                 type="button"
-                className={
-                  activeFeature === index ? "active" : ""
-                }
+                className={activeFeature === index ? "active" : ""}
                 onClick={() => setActiveFeature(index)}
               >
                 <span>{feature.icon}</span>
-
                 {feature.eyebrow.split(" / ")[1]}
               </button>
             ))}
@@ -928,12 +950,11 @@ export default function Home() {
           <div className="presentation-feature-stack">
             <Reveal
               className={`presentation-feature ${
-                activeFeature === 1 ? "feature-emphasis" : ""
+                activeFeature === 0 ? "feature-emphasis" : ""
               }`}
             >
               <div className="presentation-feature-visual inbox-feature">
                 <div className="feature-visual-glow" />
-
                 <InboxPreview compact />
               </div>
 
@@ -952,10 +973,13 @@ export default function Home() {
               </div>
             </Reveal>
 
-            <Reveal className="presentation-feature presentation-feature-reverse">
+            <Reveal
+              className={`presentation-feature presentation-feature-reverse ${
+                activeFeature === 1 ? "feature-emphasis" : ""
+              }`}
+            >
               <div className="presentation-feature-visual compose-feature">
                 <div className="feature-visual-glow" />
-
                 <ComposePreview />
               </div>
 
@@ -974,7 +998,11 @@ export default function Home() {
               </div>
             </Reveal>
 
-            <Reveal className="presentation-feature">
+            <Reveal
+              className={`presentation-feature ${
+                activeFeature === 2 ? "feature-emphasis" : ""
+              }`}
+            >
               <div className="presentation-feature-visual motion-feature">
                 <div className="motion-orbit" />
 
@@ -1015,9 +1043,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* EXPERIENCE GRID */}
-
-        <section className="experience-grid-section">
+        <section className="experience-grid-section" id="experience">
           <Reveal className="experience-grid-heading">
             <span className="section-eyebrow">
               THE LITTLE THINGS
@@ -1133,8 +1159,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* BIG STATEMENT */}
-
         <section className="presentation-big-statement">
           <div className="presentation-big-statement-inner">
             <Reveal>
@@ -1159,9 +1183,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FINAL CTA */}
-
-        <section className="presentation-final" id="experience">
+        <section className="presentation-final">
           <div className="presentation-final-grid" />
           <div className="presentation-final-glow" />
 
