@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const LOGO_SRC = "/logo.png";
 const MAIL_URL = "https://mail.fades.lol";
 
-function Logo({ size = 42 }) {
+/* =========================================================
+   ICONS
+   ========================================================= */
+
+function Logo({ size = 34 }) {
   return (
     <img
-      src={LOGO_SRC}
-      alt="Fades"
+      src="/logo.png"
+      alt="Fades Mail"
       width={size}
       height={size}
-      style={{
-        width: size,
-        height: size,
-        objectFit: "contain",
-        display: "block",
-      }}
+      className="brand-logo"
     />
   );
 }
@@ -35,17 +33,17 @@ function Arrow({ size = 18 }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M5 12h14" />
+      <path d="M5 12h13" />
       <path d="m13 6 6 6-6 6" />
     </svg>
   );
 }
 
-function CheckIcon({ size = 17 }) {
+function CheckIcon() {
   return (
     <svg
-      width={size}
-      height={size}
+      width="15"
+      height="15"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -59,30 +57,11 @@ function CheckIcon({ size = 17 }) {
   );
 }
 
-function MailIcon({ size = 20 }) {
+function SparkleIcon() {
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="5" width="18" height="14" rx="3" />
-      <path d="m3 8 9 6 9-6" />
-    </svg>
-  );
-}
-
-function SparkleIcon({ size = 18 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -97,26 +76,8 @@ function SparkleIcon({ size = 18 }) {
   );
 }
 
-function SearchIcon({ size = 18 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-4-4" />
-    </svg>
-  );
-}
-
 function MenuIcon({ open }) {
-  return open ? (
+  return (
     <svg
       width="21"
       height="21"
@@ -127,437 +88,304 @@ function MenuIcon({ open }) {
       strokeLinecap="round"
       aria-hidden="true"
     >
-      <path d="m6 6 12 12" />
-      <path d="m18 6-12 12" />
-    </svg>
-  ) : (
-    <svg
-      width="21"
-      height="21"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M4 7h16" />
-      <path d="M4 12h16" />
-      <path d="M4 17h16" />
+      {open ? (
+        <>
+          <path d="m6 6 12 12" />
+          <path d="M18 6 6 18" />
+        </>
+      ) : (
+        <>
+          <path d="M4 7h16" />
+          <path d="M4 12h16" />
+          <path d="M4 17h16" />
+        </>
+      )}
     </svg>
   );
 }
 
-function StarIcon({ filled = false, size = 17 }) {
+/* =========================================================
+   REVEAL HOOK
+   ========================================================= */
+
+function useReveal(threshold = 0.18) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold,
+        rootMargin: "0px 0px -8% 0px",
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, visible];
+}
+
+/* =========================================================
+   REVEAL WRAPPER
+   ========================================================= */
+
+function Reveal({
+  children,
+  className = "",
+  delay = "",
+}) {
+  const [ref, visible] = useReveal();
+
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={filled ? "currentColor" : "none"}
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
+    <div
+      ref={ref}
+      className={`scroll-reveal ${
+        visible ? "is-visible" : ""
+      } ${delay} ${className}`}
     >
-      <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />
-    </svg>
+      {children}
+    </div>
   );
 }
 
-function SendIcon({ size = 18 }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M22 2 11 13" />
-      <path d="m22 2-7 20-4-9-9-4 20-7Z" />
-    </svg>
-  );
-}
+/* =========================================================
+   INBOX PREVIEW
+   ========================================================= */
 
-function InboxPreview() {
-  const [activeFolder, setActiveFolder] = useState("Inbox");
-  const [selected, setSelected] = useState(null);
+function InboxPreview({ compact = false }) {
+  const [activeTab, setActiveTab] = useState("Primary");
+  const [selected, setSelected] = useState(0);
 
   const messages = [
     {
       initials: "F",
       sender: "Fades",
+      email: "hello@fades.lol",
       subject: "Welcome to Fades Mail",
-      snippet:
+      preview:
         "Your inbox is ready. Experience email, reimagined.",
       time: "10:42 AM",
+      color: "gold",
       unread: true,
     },
     {
       initials: "J",
       sender: "James Wilson",
+      email: "james@example.com",
       subject: "The project looks great!",
-      snippet:
+      preview:
         "Just went through everything. Love the new design...",
       time: "9:18 AM",
+      color: "blue",
       unread: true,
     },
     {
       initials: "S",
       sender: "Sarah Miller",
+      email: "sarah@example.com",
       subject: "Meeting confirmation",
-      snippet:
+      preview:
         "Hey, just confirming we're still on for tomorrow.",
       time: "Yesterday",
+      color: "pink",
       unread: false,
     },
     {
       initials: "M",
       sender: "Michael Chen",
+      email: "michael@example.com",
       subject: "Here are the files",
-      snippet:
+      preview:
         "I've attached the documents we discussed earlier.",
       time: "Yesterday",
+      color: "green",
       unread: false,
     },
   ];
 
-  const folders = [
-    {
-      name: "Inbox",
-      icon: <MailIcon size={17} />,
-      count: "2",
-    },
-    {
-      name: "Starred",
-      icon: <StarIcon size={17} />,
-      count: "",
-    },
-    {
-      name: "Sent",
-      icon: <SendIcon size={17} />,
-      count: "",
-    },
-    {
-      name: "Drafts",
-      icon: (
-        <svg
-          width="17"
-          height="17"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-        >
-          <path d="M4 4h16v16H4z" />
-          <path d="M4 9h16" />
-        </svg>
-      ),
-      count: "",
-    },
-    {
-      name: "Archive",
-      icon: (
-        <svg
-          width="17"
-          height="17"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-        >
-          <path d="M3 7h18v13H3z" />
-          <path d="M3 7l9 6 9-6" />
-        </svg>
-      ),
-      count: "",
-    },
-  ];
-
   const visibleMessages =
-    activeFolder === "Starred"
+    activeTab === "Starred"
       ? messages.slice(0, 2)
-      : activeFolder === "Sent"
-        ? messages.slice(1, 3)
-        : messages;
+      : activeTab === "Sent"
+      ? messages.slice(1, 3)
+      : messages;
 
   return (
-    <div className="mail-preview">
+    <div
+      className={`mail-preview presentation-preview ${
+        compact ? "presentation-preview-compact" : ""
+      }`}
+    >
       <div className="mail-preview-header">
-        <div className="flex items-center" style={{ gap: 12 }}>
-          <div className="mail-preview-dots">
-            <span className="mail-preview-dot" />
-            <span className="mail-preview-dot" />
-            <span className="mail-preview-dot" />
-          </div>
-
-          <div className="brand">
-            <Logo size={28} />
-            <span className="brand-name">Fades Mail</span>
-          </div>
+        <div className="mail-preview-dots">
+          <span className="mail-preview-dot" />
+          <span className="mail-preview-dot" />
+          <span className="mail-preview-dot" />
         </div>
 
-        <div
-          className="flex items-center"
-          style={{ gap: 10 }}
-        >
-          <span className="badge badge-success">
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "currentColor",
-              }}
-            />
-            Connected
-          </span>
-
-          <div className="mail-row-avatar">K</div>
-        </div>
+        <span>Fades Mail</span>
       </div>
 
       <div className="mail-preview-body">
         <aside className="mail-preview-sidebar">
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            style={{
-              width: "100%",
-              marginBottom: 22,
-            }}
-          >
-            <span style={{ fontSize: 18 }}>+</span>
-            Compose
-          </button>
-
-          <div
-            className="text-xs text-muted"
-            style={{
-              marginBottom: 10,
-              paddingInline: 12,
-              fontWeight: 700,
-              letterSpacing: "0.04em",
-            }}
-          >
-            MAILBOX
-          </div>
-
-          {folders.map((folder) => (
+          {["Primary", "Starred", "Sent"].map((tab) => (
             <button
-              key={folder.name}
+              key={tab}
               type="button"
               className={`mail-preview-sidebar-item ${
-                activeFolder === folder.name
-                  ? "active"
-                  : ""
+                activeTab === tab ? "active" : ""
               }`}
               onClick={() => {
-                setActiveFolder(folder.name);
-                setSelected(null);
-              }}
-              style={{
-                width: "100%",
-                border: 0,
-                background:
-                  activeFolder === folder.name
-                    ? undefined
-                    : "transparent",
-                cursor: "pointer",
+                setActiveTab(tab);
+                setSelected(0);
               }}
             >
-              {folder.icon}
-
-              <span>{folder.name}</span>
-
-              {folder.count && (
-                <span
-                  style={{
-                    marginLeft: "auto",
-                    fontSize: 11,
-                    fontWeight: 700,
-                  }}
-                >
-                  {folder.count}
-                </span>
-              )}
+              {tab}
             </button>
           ))}
         </aside>
 
         <div className="mail-preview-messages">
-          <div
-            className="flex items-center justify-between"
-            style={{
-              marginBottom: 18,
-              gap: 20,
-            }}
-          >
-            <div>
-              <span className="text-xs text-muted">
-                YOUR MAILBOX
-              </span>
-
-              <h3
-                style={{
-                  margin: "4px 0 3px",
-                  fontSize: 24,
-                  letterSpacing: "-0.045em",
-                }}
-              >
-                {activeFolder}
-              </h3>
-
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 12,
-                  color:
-                    "var(--foreground-secondary)",
-                }}
-              >
-                Stay on top of what matters.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              className="btn-icon"
-              aria-label="Refresh inbox"
-              onClick={() => {
-                setActiveFolder("Inbox");
-                setSelected(null);
-              }}
-            >
-              <svg
-                width="17"
-                height="17"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M20 7v5h-5" />
-                <path d="M4 17v-5h5" />
-                <path d="M5.6 9a7 7 0 0 1 11.6-2L20 12" />
-                <path d="M4 12l2.8 5a7 7 0 0 0 11.6-2" />
-              </svg>
-            </button>
-          </div>
-
           {visibleMessages.map((message, index) => (
             <button
+              key={message.sender}
               type="button"
-              key={`${activeFolder}-${message.sender}`}
-              className="mail-preview-message"
-              onClick={() =>
-                setSelected(
-                  selected === index ? null : index
-                )
-              }
-              style={{
-                width: "100%",
-                border: 0,
-                background:
-                  selected === index
-                    ? "var(--surface-active)"
-                    : undefined,
-                textAlign: "left",
-                cursor: "pointer",
-              }}
+              className={`mail-preview-message ${
+                selected === index ? "selected" : ""
+              }`}
+              onClick={() => setSelected(index)}
             >
-              <div className="mail-preview-avatar">
+              <div
+                className={`mail-preview-avatar ${message.color}`}
+              >
                 {message.initials}
               </div>
 
               <div className="mail-preview-message-content">
-                <div
-                  className="flex items-center justify-between"
-                  style={{ gap: 12 }}
-                >
-                  <div
-                    className="mail-preview-sender"
-                    style={{
-                      color: message.unread
-                        ? "var(--foreground)"
-                        : undefined,
-                    }}
-                  >
-                    {message.sender}
-                  </div>
-
-                  <span className="text-xs text-muted">
-                    {message.time}
-                  </span>
+                <div className="mail-preview-sender">
+                  <strong>{message.sender}</strong>
+                  <span>{message.time}</span>
                 </div>
 
-                <div
-                  className="mail-preview-subject"
-                  style={{
-                    fontWeight: message.unread
-                      ? 700
-                      : undefined,
-                    color: message.unread
-                      ? "var(--foreground)"
-                      : undefined,
-                  }}
-                >
+                <div className="mail-preview-subject">
                   {message.subject}
                 </div>
 
-                <p
-                  style={{
-                    margin: "4px 0 0",
-                    overflow: "hidden",
-                    color:
-                      "var(--foreground-muted)",
-                    fontSize: 11,
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {message.snippet}
-                </p>
+                <p>{message.preview}</p>
               </div>
-
-              <StarIcon
-                size={16}
-                filled={activeFolder === "Starred"}
-              />
             </button>
           ))}
-
-          <div
-            className="flex items-center justify-between"
-            style={{
-              padding: "18px 12px 4px",
-              fontSize: 11,
-              color: "var(--foreground-muted)",
-            }}
-          >
-            <span>
-              Showing {visibleMessages.length} messages
-            </span>
-
-            <span>All caught up</span>
-          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function FeatureIcon({ children }) {
-  return <div className="feature-icon">{children}</div>;
+/* =========================================================
+   COMPOSE PREVIEW
+   ========================================================= */
+
+function ComposePreview() {
+  return (
+    <div className="compose-window">
+      <div className="compose-header">
+        <span>New message</span>
+
+        <div className="compose-window-actions">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+
+      <div className="compose-row">
+        <span>To</span>
+        <strong>james@example.com</strong>
+      </div>
+
+      <div className="compose-row">
+        <span>Subject</span>
+        <strong>The project looks great!</strong>
+      </div>
+
+      <div className="compose-message">
+        Hey James,
+        <br />
+        <br />
+        Just wanted to follow up on our
+        conversation...
+        <span className="compose-cursor" />
+      </div>
+
+      <div className="compose-footer">
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+        >
+          Send
+          <Arrow size={14} />
+        </button>
+
+        <span>Draft saved</span>
+      </div>
+    </div>
+  );
 }
+
+/* =========================================================
+   STORY MAIL WINDOW
+   ========================================================= */
+
+function StoryMailWindow() {
+  return (
+    <div className="story-window story-window-front">
+      <div className="story-window-top">
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <div className="story-email">
+        <div className="story-avatar">F</div>
+
+        <div>
+          <strong>Welcome to Fades Mail</strong>
+
+          <span>Your inbox is ready.</span>
+        </div>
+      </div>
+
+      <div className="story-email-body">
+        Experience email,
+        <br />
+        reimagined.
+      </div>
+
+      <div className="story-email-lines">
+        <span />
+        <span />
+        <span />
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   HOME
+   ========================================================= */
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -565,20 +393,34 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 25);
     };
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
+    window.addEventListener(
+      "scroll",
+      handleScroll,
+      { passive: true }
+    );
 
-    return () => {
+    return () =>
       window.removeEventListener(
         "scroll",
         handleScroll
       );
+  }, []);
+
+  useEffect(() => {
+    const original =
+      document.documentElement.style.scrollBehavior;
+
+    document.documentElement.style.scrollBehavior =
+      "smooth";
+
+    return () => {
+      document.documentElement.style.scrollBehavior =
+        original;
     };
   }, []);
 
@@ -587,39 +429,41 @@ export default function Home() {
   };
 
   return (
-    <main className="page-container">
-      {/* Navigation */}
+    <div className="presentation-page">
 
-      <header className="navbar">
+      {/* =====================================================
+          NAVBAR
+          ===================================================== */}
+
+      <header
+        className={`navbar presentation-navbar ${
+          scrolled ? "navbar-scrolled" : ""
+        }`}
+      >
         <div className="navbar-inner">
           <a
             href="/"
             className="brand"
-            aria-label="Fades Mail home"
+            onClick={closeMenu}
           >
-            <Logo size={42} />
+            <Logo size={32} />
 
-            <div>
-              <div className="brand-name">
-                Fades<span className="text-primary">Mail</span>
-              </div>
-
-              <div className="brand-subtitle">
-                Email, reimagined.
-              </div>
-            </div>
+            <span className="brand-name">
+              Fades<span>Mail</span>
+            </span>
           </a>
 
-          <nav
-            className="navbar-links"
-            style={{
-              display: menuOpen ? "flex" : undefined,
-            }}
-          >
+          <nav className="navbar-links">
+            <a
+              href="#about"
+              className="navbar-link"
+            >
+              About
+            </a>
+
             <a
               href="#features"
               className="navbar-link"
-              onClick={closeMenu}
             >
               Features
             </a>
@@ -627,17 +471,8 @@ export default function Home() {
             <a
               href="#experience"
               className="navbar-link"
-              onClick={closeMenu}
             >
               Experience
-            </a>
-
-            <a
-              href="#about"
-              className="navbar-link"
-              onClick={closeMenu}
-            >
-              About
             </a>
           </nav>
 
@@ -653,7 +488,11 @@ export default function Home() {
             <button
               type="button"
               className="mobile-menu-button btn-icon"
-              aria-label="Toggle navigation"
+              aria-label={
+                menuOpen
+                  ? "Close navigation"
+                  : "Open navigation"
+              }
               aria-expanded={menuOpen}
               onClick={() =>
                 setMenuOpen((value) => !value)
@@ -663,347 +502,491 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Hero */}
-
-      <section className="hero">
-        <div className="hero-content">
-          <div className="hero-eyebrow">
-            <SparkleIcon size={14} />
-            Introducing Fades Mail
-          </div>
-
-          <h1 className="hero-title">
-            Email,
-            <br />
-            <span className="hero-title-gradient">
-              reimagined.
-            </span>
-          </h1>
-
-          <p className="hero-description">
-            Your inbox deserves better. Fades Mail brings
-            together a clean interface, thoughtful
-            interactions, and everything you need to stay
-            connected.
-          </p>
-
-          <div className="hero-actions">
+        {menuOpen && (
+          <div className="presentation-mobile-menu">
             <a
-              href={MAIL_URL}
-              className="btn btn-primary btn-lg"
+              href="#about"
+              onClick={closeMenu}
             >
-              Open Fades Mail
-              <Arrow />
+              About
             </a>
 
             <a
               href="#features"
-              className="btn btn-secondary btn-lg"
+              onClick={closeMenu}
             >
-              Explore features
+              Features
+            </a>
+
+            <a
+              href="#experience"
+              onClick={closeMenu}
+            >
+              Experience
+            </a>
+
+            <a
+              href={MAIL_URL}
+              onClick={closeMenu}
+            >
+              Open Fades Mail
             </a>
           </div>
+        )}
+      </header>
 
-          <div
-            className="flex-center"
-            style={{
-              gap: 8,
-              marginTop: 22,
-              color: "var(--foreground-muted)",
-              fontSize: 12,
-            }}
-          >
-            <span
-              className="flex-center"
-              style={{
-                width: 24,
-                height: 24,
-                color: "var(--success)",
-                background:
-                  "var(--success-soft)",
-                borderRadius: "50%",
-              }}
-            >
-              <CheckIcon size={14} />
-            </span>
+      <main>
 
-            A fresh take on everyday email.
+        {/* ===================================================
+            HERO
+            =================================================== */}
+
+        <section className="presentation-hero">
+          <div className="presentation-hero-background" />
+
+          <div className="presentation-hero-content">
+            <Reveal>
+              <div className="hero-eyebrow">
+                <span className="hero-eyebrow-dot" />
+                INTRODUCING FADES MAIL
+              </div>
+
+              <h1 className="presentation-title">
+                Email,
+                <br />
+
+                <span className="hero-title-gradient">
+                  reimagined.
+                </span>
+              </h1>
+
+              <p className="hero-description">
+                Your inbox deserves better. Discover a
+                beautifully designed email experience
+                built around simplicity, motion, and
+                thoughtful details.
+              </p>
+
+              <div className="hero-actions">
+                <a
+                  href={MAIL_URL}
+                  className="btn btn-primary btn-lg"
+                >
+                  Open Fades Mail
+                  <Arrow />
+                </a>
+
+                <a
+                  href="#about"
+                  className="btn btn-secondary btn-lg"
+                >
+                  Explore the experience
+                </a>
+              </div>
+
+              <div className="hero-note">
+                <span className="hero-note-icon">
+                  <CheckIcon />
+                </span>
+
+                <span>
+                  A fresh take on your everyday email.
+                </span>
+              </div>
+            </Reveal>
           </div>
 
-          <InboxPreview />
-        </div>
-      </section>
+          {/* HERO PRODUCT */}
 
-      {/* About */}
+          <Reveal className="presentation-hero-product">
+            <div className="presentation-glow" />
 
-      <section
-        className="section"
-        id="about"
-        style={{
-          background:
-            "var(--background-secondary)",
-        }}
-      >
-        <div className="container">
-          <div className="section-header">
-            <span className="badge badge-primary">
-              A different kind of email
+            <div className="presentation-floating-card presentation-floating-left">
+              <SparkleIcon />
+
+              <div>
+                <strong>Thoughtful design</strong>
+                <span>Every detail matters.</span>
+              </div>
+            </div>
+
+            <div className="presentation-floating-card presentation-floating-right">
+              <span className="online-dot" />
+
+              <div>
+                <strong>Made for your inbox</strong>
+                <span>Simple. Smooth. Fades.</span>
+              </div>
+            </div>
+
+            <InboxPreview />
+          </Reveal>
+
+          <a
+            href="#about"
+            className="presentation-scroll-hint"
+          >
+            <span>SCROLL TO EXPLORE</span>
+
+            <span className="presentation-scroll-arrow">
+              ↓
+            </span>
+          </a>
+        </section>
+
+        {/* ===================================================
+            INTRO / STORY
+            =================================================== */}
+
+        <section
+          className="presentation-story"
+          id="about"
+        >
+          <div className="presentation-sticky">
+
+            <Reveal className="presentation-story-copy">
+              <span className="section-eyebrow">
+                A DIFFERENT KIND OF EMAIL
+              </span>
+
+              <h2>
+                Your email.
+                <br />
+
+                <span>
+                  With a little more life.
+                </span>
+              </h2>
+
+              <p>
+                Email is something we use every day.
+                We think it should feel just as good
+                to use as it is useful.
+              </p>
+
+              <p>
+                That's why Fades Mail brings together
+                a clean interface, fluid interactions,
+                and carefully designed animations to
+                make managing your messages feel
+                natural.
+              </p>
+
+              <a
+                href={MAIL_URL}
+                className="text-link"
+              >
+                Experience Fades Mail
+                <Arrow size={17} />
+              </a>
+            </Reveal>
+
+            <Reveal className="presentation-story-visual">
+              <div className="story-orbit" />
+
+              <div className="story-window story-window-back">
+                <div className="story-window-bar" />
+
+                <div className="story-window-line short" />
+
+                <div className="story-window-line" />
+
+                <div className="story-window-line medium" />
+
+                <div className="story-window-line" />
+              </div>
+
+              <StoryMailWindow />
+            </Reveal>
+
+          </div>
+        </section>
+
+        {/* ===================================================
+            TRANSITION STATEMENT
+            =================================================== */}
+
+        <section className="presentation-statement">
+          <Reveal>
+            <span className="section-eyebrow">
+              DESIGNED AROUND THE WAY YOU WORK
             </span>
 
-            <h2 className="section-title">
-              Your email.
+            <h2>
+              Everything has a place.
               <br />
-              <span className="text-primary">
-                With a little more life.
+
+              <span>
+                Nothing gets in your way.
+              </span>
+            </h2>
+          </Reveal>
+        </section>
+
+        {/* ===================================================
+            FEATURES
+            =================================================== */}
+
+        <section
+          className="presentation-features"
+          id="features"
+        >
+          <Reveal className="presentation-section-heading">
+            <span className="section-eyebrow">
+              BUILT AROUND YOU
+            </span>
+
+            <h2>
+              Everything you need.
+              <br />
+
+              <span>
+                Nothing in the way.
+              </span>
+            </h2>
+          </Reveal>
+
+          <div className="presentation-feature-stack">
+
+            {/* FEATURE 01 */}
+
+            <Reveal className="presentation-feature">
+              <div className="presentation-feature-visual inbox-feature">
+                <div className="feature-visual-glow" />
+
+                <InboxPreview />
+              </div>
+
+              <div className="presentation-feature-copy">
+                <span className="feature-number">
+                  01 / INBOX
+                </span>
+
+                <h3>
+                  Your inbox,
+                  <br />
+                  finally under control.
+                </h3>
+
+                <p>
+                  See what matters without fighting
+                  through clutter. Fades Mail keeps
+                  your messages organized and easy
+                  to navigate.
+                </p>
+
+                <a
+                  href={MAIL_URL}
+                  className="text-link"
+                >
+                  Explore your inbox
+                  <Arrow size={17} />
+                </a>
+              </div>
+            </Reveal>
+
+            {/* FEATURE 02 */}
+
+            <Reveal
+              className="presentation-feature presentation-feature-reverse"
+            >
+              <div className="presentation-feature-visual compose-feature">
+                <div className="feature-visual-glow" />
+
+                <ComposePreview />
+              </div>
+
+              <div className="presentation-feature-copy">
+                <span className="feature-number">
+                  02 / COMPOSE
+                </span>
+
+                <h3>
+                  Write naturally.
+                  <br />
+                  Send instantly.
+                </h3>
+
+                <p>
+                  A focused writing experience keeps
+                  everything you need close without
+                  getting in the way of what you're
+                  trying to say.
+                </p>
+
+                <a
+                  href={MAIL_URL}
+                  className="text-link"
+                >
+                  Start writing
+                  <Arrow size={17} />
+                </a>
+              </div>
+            </Reveal>
+
+            {/* FEATURE 03 */}
+
+            <Reveal className="presentation-feature">
+              <div className="presentation-feature-visual motion-feature">
+                <div className="motion-orbit" />
+
+                <div className="motion-card motion-card-one">
+                  <SparkleIcon />
+
+                  <span>
+                    Thoughtful details
+                  </span>
+                </div>
+
+                <div className="motion-card motion-card-two">
+                  <CheckIcon />
+
+                  <span>
+                    Draft saved
+                  </span>
+                </div>
+
+                <div className="motion-card motion-card-three">
+                  <span className="online-dot" />
+
+                  <span>
+                    Connected
+                  </span>
+                </div>
+              </div>
+
+              <div className="presentation-feature-copy">
+                <span className="feature-number">
+                  03 / EXPERIENCE
+                </span>
+
+                <h3>
+                  Motion that feels
+                  <br />
+                  completely natural.
+                </h3>
+
+                <p>
+                  Small interactions make the entire
+                  experience feel alive without
+                  distracting you from your inbox.
+                </p>
+
+                <a
+                  href={MAIL_URL}
+                  className="text-link"
+                >
+                  Experience the details
+                  <Arrow size={17} />
+                </a>
+              </div>
+            </Reveal>
+
+          </div>
+        </section>
+
+        {/* ===================================================
+            BIG MID-PAGE STATEMENT
+            =================================================== */}
+
+        <section className="presentation-big-statement">
+          <div className="presentation-big-statement-inner">
+            <Reveal>
+              <span className="section-eyebrow">
+                EMAIL, REIMAGINED
+              </span>
+
+              <h2>
+                Simple enough
+                <br />
+                for every day.
+              </h2>
+
+              <p>
+                Powerful enough to keep up.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ===================================================
+            EXPERIENCE
+            =================================================== */}
+
+        <section
+          className="presentation-final"
+          id="experience"
+        >
+          <div className="presentation-final-glow" />
+
+          <Reveal className="presentation-final-content">
+            <div className="presentation-final-logo">
+              <Logo size={54} />
+            </div>
+
+            <span className="section-eyebrow">
+              THE FADES MAIL EXPERIENCE
+            </span>
+
+            <h2>
+              Email should feel
+              <br />
+
+              <span>
+                this good.
               </span>
             </h2>
 
-            <p className="section-description">
-              Email is something we use every day. We
-              think it should feel just as good to use as
-              it is useful.
+            <p>
+              A little more personality.
+              A little more polish.
+              And a whole lot more attention
+              to the details that matter.
             </p>
-          </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(3, minmax(0, 1fr))",
-              gap: 24,
-            }}
-          >
-            <div className="card card-hover">
-              <FeatureIcon>
-                <SparkleIcon size={24} />
-              </FeatureIcon>
+            <a
+              href={MAIL_URL}
+              className="btn btn-primary btn-lg"
+            >
+              Experience Fades Mail
+              <Arrow />
+            </a>
 
-              <h3 className="card-title">
-                Thoughtful by design
-              </h3>
-
-              <p className="card-description">
-                Every part of Fades Mail is designed to
-                stay clear, comfortable, and easy to use.
-              </p>
+            <div className="presentation-url">
+              <span className="online-dot" />
+              mail.fades.lol
             </div>
+          </Reveal>
+        </section>
 
-            <div className="card card-hover">
-              <FeatureIcon>
-                <MailIcon size={24} />
-              </FeatureIcon>
+      </main>
 
-              <h3 className="card-title">
-                Built around your inbox
-              </h3>
-
-              <p className="card-description">
-                Keep conversations, messages, and
-                everyday communication together in one
-                focused workspace.
-              </p>
-            </div>
-
-            <div className="card card-hover">
-              <FeatureIcon>
-                <CheckIcon size={24} />
-              </FeatureIcon>
-
-              <h3 className="card-title">
-                Simple when it matters
-              </h3>
-
-              <p className="card-description">
-                No unnecessary complexity. Just the
-                tools you need to stay connected.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-
-      <section
-        className="section"
-        id="features"
-      >
-        <div className="container">
-          <div className="section-header">
-            <span className="badge badge-neutral">
-              The details make the difference
-            </span>
-
-            <h2 className="section-title">
-              More than just
-              <br />
-              <span>another inbox.</span>
-            </h2>
-
-            <p className="section-description">
-              A polished email experience built around
-              the way people actually communicate.
-            </p>
-          </div>
-
-          <div className="features-grid">
-            <article className="feature-card">
-              <FeatureIcon>
-                <SparkleIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                Everything moves with purpose.
-              </h3>
-
-              <p className="feature-description">
-                Fluid transitions, responsive controls,
-                and subtle interactions make Fades Mail
-                feel natural from the moment you open it.
-              </p>
-            </article>
-
-            <article className="feature-card">
-              <FeatureIcon>
-                <MailIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                A clean, focused inbox.
-              </h3>
-
-              <p className="feature-description">
-                See what matters without unnecessary
-                clutter. Messages stay readable and easy
-                to manage.
-              </p>
-            </article>
-
-            <article className="feature-card">
-              <FeatureIcon>
-                <StarIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                Stay organized.
-              </h3>
-
-              <p className="feature-description">
-                Use folders, starred messages, drafts,
-                sent mail, and archive tools to keep
-                everything where it belongs.
-              </p>
-            </article>
-
-            <article className="feature-card">
-              <FeatureIcon>
-                <SendIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                Write and send effortlessly.
-              </h3>
-
-              <p className="feature-description">
-                Compose messages, manage recipients, and
-                keep conversations moving with a
-                straightforward writing experience.
-              </p>
-            </article>
-
-            <article className="feature-card">
-              <FeatureIcon>
-                <SearchIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                Find what you need.
-              </h3>
-
-              <p className="feature-description">
-                Search-focused navigation keeps your
-                messages accessible without making the
-                interface feel overwhelming.
-              </p>
-            </article>
-
-            <article className="feature-card">
-              <FeatureIcon>
-                <CheckIcon size={25} />
-              </FeatureIcon>
-
-              <h3 className="feature-title">
-                Made to feel right.
-              </h3>
-
-              <p className="feature-description">
-                Refined typography, spacing, responsive
-                layouts, and a consistent visual system
-                keep the experience cohesive.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-
-      <section
-        className="cta-section"
-        id="experience"
-      >
-        <div className="cta-card">
-          <h2 className="cta-title">
-            Email should feel this good.
-          </h2>
-
-          <p className="cta-description">
-            A little more personality. A little more
-            polish. And a whole lot more attention to the
-            details that matter.
-          </p>
-
-          <a
-            href={MAIL_URL}
-            className="btn"
-          >
-            Experience Fades Mail
-            <Arrow size={17} />
-          </a>
-        </div>
-      </section>
-
-      {/* Footer */}
+      {/* =====================================================
+          FOOTER
+          ===================================================== */}
 
       <footer className="footer">
         <div className="footer-inner">
+
           <div className="footer-top">
+
             <div>
               <a
                 href="/"
                 className="brand"
               >
-                <Logo size={42} />
+                <Logo size={32} />
 
-                <div>
-                  <div className="brand-name">
-                    Fades<span className="text-primary">
-                      Mail
-                    </span>
-                  </div>
-
-                  <div className="brand-subtitle">
-                    Email, reimagined.
-                  </div>
-                </div>
+                <span className="brand-name">
+                  Fades<span>Mail</span>
+                </span>
               </a>
 
               <p className="footer-brand-description">
-                A modern email experience designed to
-                make everyday communication feel simple,
-                polished, and natural.
+                Email, reimagined.
+                <br />
+                A Fades product.
               </p>
             </div>
 
@@ -1013,6 +996,13 @@ export default function Home() {
               </div>
 
               <div className="footer-links">
+                <a
+                  href="#about"
+                  className="footer-link"
+                >
+                  About
+                </a>
+
                 <a
                   href="#features"
                   className="footer-link"
@@ -1025,13 +1015,6 @@ export default function Home() {
                   className="footer-link"
                 >
                   Experience
-                </a>
-
-                <a
-                  href="#about"
-                  className="footer-link"
-                >
-                  About
                 </a>
               </div>
             </div>
@@ -1083,21 +1066,15 @@ export default function Home() {
                 >
                   Open your inbox
                 </a>
-
-                <a
-                  href={MAIL_URL}
-                  className="footer-link"
-                >
-                  Start using Fades Mail
-                </a>
               </div>
             </div>
+
           </div>
 
           <div className="footer-bottom">
             <span>
-              © {new Date().getFullYear()} Fades. All
-              rights reserved.
+              © {new Date().getFullYear()} Fades.
+              All rights reserved.
             </span>
 
             <a
@@ -1105,10 +1082,13 @@ export default function Home() {
               className="footer-link"
             >
               mail.fades.lol
+              <Arrow size={14} />
             </a>
           </div>
+
         </div>
       </footer>
-    </main>
+
+    </div>
   );
 }
