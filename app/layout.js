@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Fades Systems",
+  title: "Fades Mail",
   description: "The home of the Fades Ecosystem",
 };
 
