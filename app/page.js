@@ -356,7 +356,7 @@ function InboxPreview({ compact = false }) {
 
         <div className="preview-header-status">
           <span className="online-dot" />
-          Live
+          Private
         </div>
       </div>
 
@@ -400,7 +400,7 @@ function InboxPreview({ compact = false }) {
               <i />
             </div>
 
-            <small>2.4 GB of 15 GB</small>
+            <small>2.4 GB of 5 GB</small>
           </div>
         </aside>
 
@@ -746,7 +746,7 @@ export default function Home() {
 
             <span className="nav-status">
               <span className="online-dot" />
-              Available now
+              Invite only
             </span>
 
             <a href={MAIL_URL} className="btn btn-primary btn-sm">
@@ -813,7 +813,7 @@ export default function Home() {
             <Reveal>
               <div className="hero-eyebrow">
                 <span className="hero-eyebrow-dot" />
-                INTRODUCING FADES MAIL
+                PRIVATE FADES MAIL
                 <span className="hero-eyebrow-line" />
               </div>
 
@@ -829,6 +829,11 @@ export default function Home() {
                 A calmer, cleaner email experience built for people who
                 want their inbox to feel as good as the rest of their
                 workflow.
+              </p>
+
+              <p className="hero-description">
+                Fades Mail is currently private and invite-only. Access is
+                limited to invited users.
               </p>
 
               <div className="hero-actions">
@@ -856,10 +861,10 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <strong>Made to be opened every day.</strong>
+                  <strong>Built for a private community.</strong>
 
                   <small>
-                    Simple interface · Thoughtful details · No clutter
+                    Invite only · Private mailboxes · No public signup
                   </small>
                 </div>
               </div>
@@ -884,8 +889,8 @@ export default function Home() {
               <span className="online-dot" />
 
               <div>
-                <strong>Always in reach</strong>
-                <span>Simple. Smooth. Fades.</span>
+                <strong>Private access</strong>
+                <span>Invite only. Built with care.</span>
               </div>
             </div>
 
@@ -923,7 +928,7 @@ export default function Home() {
               </span>
 
               <div>
-                <strong>Built with care</strong>
+                <strong>Private by design</strong>
                 <small>Your inbox stays yours.</small>
               </div>
             </div>
@@ -945,7 +950,7 @@ export default function Home() {
           <div className="presentation-sticky">
             <Reveal className="presentation-story-copy">
               <span className="section-eyebrow">
-                A DIFFERENT KIND OF EMAIL
+                A PRIVATE KIND OF EMAIL
               </span>
 
               <h2>
@@ -989,8 +994,8 @@ export default function Home() {
                     <CheckIcon />
                   </span>
 
-                  <strong>Feels like Fades</strong>
-                  <small>Distinctive without being distracting.</small>
+                  <strong>Private access</strong>
+                  <small>Fades Mail is available by invitation.</small>
                 </div>
               </div>
 
@@ -1014,8 +1019,8 @@ export default function Home() {
 
               <div className="story-stat-card">
                 <span>01</span>
-                <strong>Less noise.</strong>
-                <small>More room for what matters.</small>
+                <strong>Private by design.</strong>
+                <small>Built for invited users.</small>
               </div>
             </Reveal>
           </div>
@@ -1212,7 +1217,7 @@ export default function Home() {
               <div className="secure-badge">
                 <ShieldIcon />
                 <strong>Private by design</strong>
-                <small>Your messages belong to you.</small>
+                <small>Access is limited to invited users.</small>
               </div>
 
               <h3>Quiet confidence.</h3>
@@ -1283,7 +1288,7 @@ export default function Home() {
           <div className="presentation-big-statement-inner">
             <Reveal>
               <span className="section-eyebrow">
-                EMAIL, REIMAGINED
+                PRIVATE EMAIL, REIMAGINED
               </span>
 
               <h2>
@@ -1313,7 +1318,7 @@ export default function Home() {
             </div>
 
             <span className="section-eyebrow">
-              THE FADES MAIL EXPERIENCE
+              PRIVATE FADES MAIL
             </span>
 
             <h2>
@@ -1327,12 +1332,17 @@ export default function Home() {
               lot more attention to the details that matter.
             </p>
 
+            <p>
+              Fades Mail is currently invite-only. If you already have access,
+              you can sign in through the mail app.
+            </p>
+
             <div className="final-actions">
               <a
                 href={MAIL_URL}
                 className="btn btn-primary btn-lg"
               >
-                Experience Fades Mail <Arrow />
+                Open Fades Mail <Arrow />
               </a>
 
               <a
@@ -1347,7 +1357,7 @@ export default function Home() {
               <span className="online-dot" />
               mail.fades.lol
               <span className="url-divider" />
-              Available now
+              Invite only
             </div>
           </Reveal>
         </section>
@@ -1373,7 +1383,7 @@ export default function Home() {
 
               <div className="footer-live">
                 <span className="online-dot" />
-                mail.fades.lol is online
+                Fades Mail is invite-only
               </div>
             </div>
 
@@ -1434,7 +1444,7 @@ export default function Home() {
 
             <div>
               <div className="footer-column-title">
-                GET STARTED
+                ACCESS
               </div>
 
               <div className="footer-links">
